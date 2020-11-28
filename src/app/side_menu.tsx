@@ -54,7 +54,7 @@ export function NestedList() {
                     <ListItemText primary="Option one" />
                 </ListItem>
             </a>
-            <a href="#/ticketSystem/tree" style={aStyle} onClick={() => false}>
+            <a href="#/ticketSystem/two" style={aStyle} onClick={() => false}>
                 <ListItem button>
                     <ListItemIcon>
                         <DraftsIcon />
@@ -62,7 +62,7 @@ export function NestedList() {
                     <ListItemText primary="Option two" />
                 </ListItem>
             </a>
-            <a href="#/ticketSystem/two" style={aStyle} onClick={() => false}>
+            <a href="#/ticketSystem/three" style={aStyle} onClick={() => false}>
                 <ListItem button onClick={handleClick}>
                     <ListItemIcon>
                         <InboxIcon />
