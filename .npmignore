@@ -2,3 +2,4 @@ src/
 public/
 build/
 .github
+proxy/
