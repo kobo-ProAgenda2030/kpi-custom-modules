@@ -7,6 +7,8 @@ import { User } from "../models/user";
 
 
 export function TicketSystemBody({ baseURL }: { baseURL: string }) {
+    console.log("TicketSystemBody")
+    console.log(baseURL)
     const [server] = useState<ServerConnection>(new ServerConnection(baseURL))
     const [user, setUser] = useState<null | User>(null)
     const [survey, setSurvey] = useState<null | Survey>(null)
