@@ -84,3 +84,6 @@ export function NestedList() {
         </List>
     );
 }
+export function TicketSystemSideBar() {
+    return (<NestedList />)
+}

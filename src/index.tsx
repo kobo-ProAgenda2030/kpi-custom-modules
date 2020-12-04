@@ -1,13 +1,17 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css'
-import { TicketSystemBody, TicketSystemSideBar } from './app/ticket-system';
+import { TicketSystemBody } from './app/ticket-system';
+import { TicketSystemSideBar } from './app/side_menu';
 console.log("dev ticket system")
+function App() {
+    return (<div style={{ display: "flex" }}>
+        <TicketSystemSideBar />
+        <TicketSystemBody baseURL="http://localhost:5000/" /></div>)
+}
 ReactDOM.render(
     <React.StrictMode>
-        <div style={{ display: "flex" }}>
-            <TicketSystemSideBar />
-            <TicketSystemBody /></div>
+        <App />
     </React.StrictMode>,
     document.getElementById('root')
 );
