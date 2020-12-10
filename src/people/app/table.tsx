@@ -60,8 +60,8 @@ const headCells: HeadCell[] = [
   { id: 'formation', numeric: false, disablePadding: true, label: 'Formacion' },
   { id: 'address', numeric: false, disablePadding: true, label: 'Direccion' },
   { id: 'phone', numeric: false, disablePadding: true, label: 'Telefonos' },
-  { id: 'professionals', numeric: true, disablePadding: true, label: 'Profesionales' },
-  { id: 'employes', numeric: true, disablePadding: true, label: 'Empleados' },
+  // { id: 'professionals', numeric: true, disablePadding: true, label: 'Profesionales' },
+  // { id: 'employes', numeric: true, disablePadding: true, label: 'Empleados' },
   { id: 'department', numeric: false, disablePadding: true, label: 'Departamento' },
   { id: 'province', numeric: false, disablePadding: true, label: 'Provincia' },
   { id: 'municipality', numeric: false, disablePadding: true, label: 'Municipio' },
@@ -189,8 +189,8 @@ export function EnhancedTable() {
                       <TableCell  >{row.formation}</TableCell>
                       <TableCell  >{row.address}</TableCell>
                       <TableCell  >{row.phone}</TableCell>
-                      <TableCell align="right" >{row.professionals}</TableCell>
-                      <TableCell align="right" >{row.employes}</TableCell>
+                      {/* <TableCell align="right" >{row.professionals}</TableCell>
+                      <TableCell align="right" >{row.employes}</TableCell> */}
                       <TableCell >{row.department}</TableCell>
                       <TableCell  >{row.province}</TableCell>
                       <TableCell >{row.municipality}</TableCell>

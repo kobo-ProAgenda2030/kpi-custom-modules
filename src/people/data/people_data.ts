@@ -22,7 +22,7 @@ export class PeopleData {
     }
     async postProfile(profile: PostProfile) {
         this.loading.next(true)
-        await sleep(5000)
+        // await sleep(5000)
         await this.server.postUser(profile).catch(error => {
             this.loading.next(false)
             throw error
