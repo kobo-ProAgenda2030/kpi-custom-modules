@@ -18,6 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         appBar: {
             position: 'relative',
+            background:"#2D2F3A"
         },
         title: {
             marginLeft: theme.spacing(2),

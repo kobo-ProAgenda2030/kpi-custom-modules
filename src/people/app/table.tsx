@@ -88,9 +88,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
   return (
 
-    <TableHead style={{}}>
+    <TableHead>
 
-      <TableRow>
+      <TableRow style={{ background: "#22B6C3",color:"white" }}>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -103,7 +103,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
-              style={{ textAlign: "center", fontWeight: "bold" }}
+              style={{ textAlign: "center", fontWeight: "bold",color:"white" }}
             >
               {headCell.label}
               {orderBy === headCell.id ? (
@@ -162,7 +162,7 @@ export function EnhancedTable() {
 
   return (
     <div>
-      <Typography variant="h3" component="h2">CAPYs</Typography>
+      <Typography variant="h3" component="h2" style={{color:"#2D2F3A"}}>CAPyS</Typography>
       <Paper >
         <TableContainer>
           <Table
