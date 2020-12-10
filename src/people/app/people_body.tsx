@@ -14,7 +14,7 @@ export function PeopleBody({ baseURL }: { baseURL: string }) {
     useEffect(() => {
         peopleData.load(baseURL)
     }, [baseURL])
-    return (<div style={{ width: "100%" }}>
+    return (<div style={{ width: "calc(100% - 40px)", padding: 20 }}>
         {loading && users.length === 0 ? <LinearProgress style={{ width: "100%" }} /> : <EnhancedTable />}
 
         <Fab style={{
