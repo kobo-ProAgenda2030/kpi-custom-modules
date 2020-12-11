@@ -11,7 +11,7 @@ function App() {
         <div style={{ width: 300 }}>
             <PeopleSideBar />
         </div>
-        <PeopleBody baseURL={"http://localhost:8500/dummy/dashboard"} />
+        <PeopleBody baseURL={"http://support.nexion-dev.tk:8500/dummy/dashboard"} />
     </div>)
 }
 ReactDOM.render(
