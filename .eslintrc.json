@@ -29,6 +29,7 @@
     "rules": {
         "@typescript-eslint/explicit-module-boundary-types": "off",
         "react/jsx-key": "off",
-        "@typescript-eslint/no-explicit-any": "off"
+        "@typescript-eslint/no-explicit-any": "off",
+        "react/react-in-jsx-scope": "off"
     }
 }

@@ -9,10 +9,21 @@ import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
-import { PostProfile } from "../models/profile";
-import { Grid, TextField } from "@material-ui/core";
-import { peopleData } from "./people_body";
+import { Organization } from "../models/profile";
+import { Card, Checkbox, Grid, TextField } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
+import { KoboUser } from "../models/KoboUser";
+import { TwitterPicker } from "react-color";
+import {
+  AddBox,
+  CheckBox,
+  CheckBoxOutlineBlank,
+  Delete,
+  Edit,
+} from "@material-ui/icons";
+import { UseExecuter } from "../../../utils/useExecuter";
 import { useBehaviorState } from "../../../utils/useBehaviorState";
+import { organizationData } from "./people_body";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -35,80 +46,44 @@ const Transition = React.forwardRef(function Transition(
 });
 const gridStyle: React.CSSProperties = { padding: 10 };
 export function FullScreenDialog({
-  editProfile: profile,
+  organization,
   onClose,
 }: {
-  editProfile: PostProfile | null;
-  onClose: () => void;
+  organization: Organization;
+  onClose: (cancelled: boolean) => void;
 }) {
   const classes = useStyles();
-
-  const loading = useBehaviorState(peopleData.loading);
-  const [userName, setUserName] = useState<string>("");
-  const [password, setPassword] = useState("");
+  const [didMount, setDidMount] = useState(false);
+  const koboUsers: KoboUser[] = useBehaviorState(organizationData.users);
+  const [usersSelected, setUsersSelected] = React.useState<KoboUser[]>([]);
+  const { loading, error, executer } = UseExecuter();
   const [name, setName] = useState("");
-  const [formation, setFormation] = useState("");
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
-  const [professionals, setProfessionals] = useState<number>(0);
-  const [employes, setEmployes] = useState<number>(0);
-  const [department, setDepartment] = useState("");
-  const [province, setProvince] = useState("");
-  const [municipality, setMunicipality] = useState("");
-  const [waterConnections, setWaterConnections] = useState<number>(0);
-  const [connectionsWithMeter, setConnectionsWithMeter] = useState<number>(0);
-  const [
-    connectionsWithoutMeter,
-    setConnectionsWithoutMeter,
-  ] = useState<number>(0);
-  const [publicPools, setPublicPools] = useState<number>(0);
-  const [latrines, setLatrines] = useState<number>(0);
-  const [serviceContinuity, setServiceContinuity] = useState("");
-
+  const [color, setColor] = useState("");
   useEffect(() => {
-    if (profile !== null) {
-      // setUserName(profile.userName)
-      // setPassword(profile.password)
-      setName(profile.name);
-      // setFormation(profile.formation)
-      // setAddress(profile.address)
-      // setPhone(profile.phone)
-      // setProfessionals(profile.professionals)
-      // setEmployes(profile.employes)
-      // setDepartment(profile.department)
-      // setProvince(profile.province)
-      // setMunicipality(profile.municipality)
-      // setWaterConnections(profile.waterConnections)
-      // setConnectionsWithMeter(profile.connectionsWithMeter)
-      // setConnectionsWithoutMeter(profile.connectionsWithoutMeter)
-      // setPublicPools(profile.publicPools)
-      // setLatrines(profile.latrines)
-      // setServiceContinuity(profile.serviceContinuity)
-    } else {
-      setUserName("");
-      setPassword("");
-      setName("");
-      setFormation("");
-      setAddress("");
-      setPhone("");
-      setProfessionals(0);
-      setEmployes(0);
-      setDepartment("");
-      setProvince("");
-      setMunicipality("");
-      setWaterConnections(0);
-      setConnectionsWithMeter(0);
-      setConnectionsWithoutMeter(0);
-      setPublicPools(0);
-      setLatrines(0);
-      setServiceContinuity("");
+    if (organization !== null) {
+      setName(organization.name);
+      const users: KoboUser[] = [];
+      organization.members.forEach((user) => {
+        const userFound = koboUsers.find((KoboUser) => {
+          return user === KoboUser.id;
+        });
+        if (userFound !== undefined) users.push(userFound);
+      });
+      setUsersSelected(users);
+      setColor(organization.color);
     }
-  }, [profile]);
+    setDidMount(true);
+    return () => setDidMount(false);
+  }, [organization]);
+  if (!didMount) {
+    return null;
+  }
   return (
     <div>
       <Dialog
-        fullScreen
-        open={profile !== null}
+        disableBackdropClick
+        fullWidth
+        open
         onClose={onClose}
         TransitionComponent={Transition}
       >
@@ -118,81 +93,49 @@ export function FullScreenDialog({
               disabled={loading}
               edge="start"
               color="inherit"
-              onClick={onClose}
+              onClick={() => onClose(true)}
               aria-label="close"
             >
               <CloseIcon />
             </IconButton>
             <Typography variant="h6" className={classes.title}>
-              {profile !== null && profile.id === null
+              {organization.organizationId === undefined
                 ? "Nuevo"
-                : "Editar Perfil"}
+                : "Editar Organizacion"}
             </Typography>
             <Button
               disabled={loading}
               autoFocus
               color="inherit"
               onClick={() => {
-                if (profile !== null)
-                  peopleData
-                    .postProfile({
-                      id: profile.id,
-                      // userName: userName,
-                      // password: password,
+                if (organization !== null) {
+                  executer(async () => {
+                    await organizationData.updateCreateOrganization({
+                      organizationId: organization.organizationId,
+                      parentOrganizationId: organization.parentOrganizationId,
                       name: name,
-                      // formation: formation,
-                      // address: address,
-                      // phone: phone,
-                      // professionals: professionals,
-                      // employes: employes,
-                      // department: department,
-                      // province: province,
-                      // municipality: municipality,
-                      // waterConnections: waterConnections,
-                      // connectionsWithMeter: connectionsWithMeter,
-                      // connectionsWithoutMeter: connectionsWithoutMeter,
-                      // publicPools: publicPools,
-                      // latrines: latrines,
-                      // serviceContinuity: serviceContinuity,
-                    })
-                    .then(onClose)
-                    .catch(alert);
+                      color: "",
+                      profileId: organization.profileId,
+                      members: usersSelected.map((user) => user.id),
+                    });
+                    organization.name = name;
+                    organization.members = usersSelected.map((user) => user.id);
+                    organization.color = color;
+                    onClose(false);
+                  });
+                }
               }}
             >
-              {profile !== null && profile.id === null ? "Crear" : "Guardar"}
+              {organization.organizationId === undefined ? "Crear" : "Guardar"}
             </Button>
           </Toolbar>
         </AppBar>
         <Grid container style={{ paddingTop: 20, paddingBottom: 10 }}>
-          <Grid item xs={6} style={gridStyle}>
+          <Grid item xs={8} style={gridStyle}>
             <TextField
               disabled={loading}
               fullWidth
-              label="Nombre de usuario"
-              variant="outlined"
-              value={userName}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setUserName(event.target.value);
-              }}
-            />
-          </Grid>
-          <Grid item xs={6} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Contraseña"
-              variant="outlined"
-              value={password}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setPassword(event.target.value);
-              }}
-            />
-          </Grid>
-          <Grid item xs={12} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Nombre de la EPSA o CAPyS"
+              label="Nombre de la organizacion"
               variant="outlined"
               value={name}
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -200,180 +143,101 @@ export function FullScreenDialog({
               }}
             />
           </Grid>
-          <Grid item xs={12} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Formación de consitución"
-              variant="outlined"
-              value={formation}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setFormation(event.target.value);
-              }}
-            />
+          <Grid item xs={4} style={{ ...gridStyle, display: "flex" }}>
+            {organization.profileId === undefined ? (
+              <Button
+                disabled={loading}
+                fullWidth
+                variant="outlined"
+                color="primary"
+                startIcon={<AddBox />}
+              >
+                Crear perfil
+              </Button>
+            ) : (
+              <Button
+                disabled={loading}
+                fullWidth
+                variant="outlined"
+                color="primary"
+                startIcon={<Edit />}
+              >
+                Editar perfil
+              </Button>
+            )}
           </Grid>
           <Grid item xs={12} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Dirección"
-              variant="outlined"
-              value={address}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setAddress(event.target.value);
-              }}
-            />
+            <Card style={{ height: 50, backgroundColor: color }} />
           </Grid>
           <Grid item xs={12} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Telefonos"
-              variant="outlined"
-              value={phone}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setPhone(event.target.value);
-              }}
-            />
-          </Grid>
-          <Grid item xs={6} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Número de tecnicos y/o profesionales"
-              variant="outlined"
-              value={professionals}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const num = Number(event.target.value);
-                if (!isNaN(num)) setProfessionals(num);
-              }}
-            />
-          </Grid>
-          <Grid item xs={6} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Número total de empleados"
-              variant="outlined"
-              value={employes}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const num = Number(event.target.value);
-                if (!isNaN(num)) setEmployes(num);
+            <TwitterPicker
+              color={color}
+              width={"100%"}
+              onChange={(newColor) => {
+                setColor(newColor.hex);
+                console.log(newColor);
               }}
             />
           </Grid>
           <Grid item xs={12} style={gridStyle}>
-            <TextField
+            <Autocomplete
               disabled={loading}
+              multiple
+              id="checkboxes-tags-demo"
+              options={koboUsers}
               fullWidth
-              label="Departamento"
-              variant="outlined"
-              value={department}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setDepartment(event.target.value);
+              value={usersSelected}
+              onChange={(event: any, newValue: KoboUser[]) => {
+                console.log(newValue);
+                setUsersSelected(newValue);
               }}
+              disableCloseOnSelect
+              disableClearable
+              getOptionLabel={(option) => option.username}
+              renderOption={(option, { selected }) => (
+                <React.Fragment>
+                  <Checkbox
+                    icon={<CheckBoxOutlineBlank fontSize="small" />}
+                    checkedIcon={<CheckBox fontSize="small" />}
+                    style={{ marginRight: 8 }}
+                    checked={selected}
+                  />
+                  {option.username}
+                </React.Fragment>
+              )}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  variant="outlined"
+                  label="Miembros"
+                  placeholder="Buscar usuarios"
+                />
+              )}
             />
           </Grid>
-          <Grid item xs={12} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Provincia"
-              variant="outlined"
-              value={province}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setProvince(event.target.value);
+          {organization.parentOrganizationId !== undefined && (
+            <Grid
+              item
+              xs={12}
+              style={{
+                ...gridStyle,
+                color: "red",
+                display: "flex",
+                justifyContent: "center",
               }}
-            />
-          </Grid>
-          <Grid item xs={12} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Municipio"
-              variant="outlined"
-              value={municipality}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setMunicipality(event.target.value);
-              }}
-            />
-          </Grid>
-          <Grid item xs={4} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Numero total de conexiones de agua potable"
-              variant="outlined"
-              value={waterConnections}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const num = Number(event.target.value);
-                if (!isNaN(num)) setWaterConnections(num);
-              }}
-            />
-          </Grid>
-          <Grid item xs={4} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Numero de conexiones con medidor"
-              variant="outlined"
-              value={connectionsWithMeter}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const num = Number(event.target.value);
-                if (!isNaN(num)) setConnectionsWithMeter(num);
-              }}
-            />
-          </Grid>
-          <Grid item xs={4} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Numero de conexiones sin medidor"
-              variant="outlined"
-              value={connectionsWithoutMeter}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const num = Number(event.target.value);
-                if (!isNaN(num)) setConnectionsWithoutMeter(num);
-              }}
-            />
-          </Grid>
-          <Grid item xs={4} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Numero de piletas publicas"
-              variant="outlined"
-              value={publicPools}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const num = Number(event.target.value);
-                if (!isNaN(num)) setPublicPools(num);
-              }}
-            />
-          </Grid>
-          <Grid item xs={4} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Numero de letrinas"
-              variant="outlined"
-              value={latrines}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                const num = Number(event.target.value);
-                if (!isNaN(num)) setLatrines(num);
-              }}
-            />
-          </Grid>
-          <Grid item xs={4} style={gridStyle}>
-            <TextField
-              disabled={loading}
-              fullWidth
-              label="Continuidad del servicio  hr/dia"
-              variant="outlined"
-              value={serviceContinuity}
-              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                setServiceContinuity(event.target.value);
-              }}
-            />
+            >
+              <Button
+                disabled={loading}
+                variant="contained"
+                color="secondary"
+                startIcon={<Delete />}
+              >
+                Eliminar Organizacion
+              </Button>
+            </Grid>
+          )}
+          <Grid item xs={12} style={{ ...gridStyle, color: "red" }}>
+            {error}
           </Grid>
         </Grid>
       </Dialog>

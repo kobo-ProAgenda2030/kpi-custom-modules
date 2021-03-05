@@ -1,25 +1,38 @@
-import { LinearProgress } from "@material-ui/core";
+import { LinearProgress, Typography } from "@material-ui/core";
 import { Add, Edit, KeyboardArrowUp } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { useBehaviorState } from "../../../utils/useBehaviorState";
-import { organization, OrganizationData } from "../data/organization_data";
-import { Organization, Profile } from "../models/profile";
+import { OrganizationData } from "../data/organization_data";
+import { Organization } from "../models/profile";
 import { KeyboardArrowDown } from "@material-ui/icons";
-export const peopleData: OrganizationData = new OrganizationData();
+import { FullScreenDialog } from "./modal";
+import { UseExecuter } from "../../../utils/useExecuter";
+import { colorLum } from "../../../utils/ColorLum";
+export const organizationData: OrganizationData = new OrganizationData();
 export function OrganizationBody({ baseURL }: { baseURL: string }) {
-  console.log("PeopleBody");
-  console.log(baseURL);
-  const loading = useBehaviorState(peopleData.loading);
-  const users: Profile[] = useBehaviorState(peopleData.users);
+  const { loading, executer } = UseExecuter();
+  const organizations: Organization[] = useBehaviorState(
+    organizationData.organizations
+  );
+
   useEffect(() => {
-    peopleData.load(baseURL);
+    executer(async () => {
+      await organizationData.load(baseURL);
+    });
   }, [baseURL]);
   return (
-    <div style={{ width: "calc(100% - 40px)", padding: 20 }}>
-      {loading && users.length === 0 ? (
+    <div
+      style={{
+        width: "calc(100% - 40px)",
+        padding: 20,
+      }}
+    >
+      {loading ? (
         <LinearProgress style={{ width: "100%" }} />
+      ) : organizations.length !== 0 ? (
+        <OrganizationView organizations={organizations[0]} flag={false} />
       ) : (
-        <OrganizationView organizations={organization} flag={false} />
+        <div>No hay organizaciones diponibles</div>
       )}
     </div>
   );
@@ -33,6 +46,7 @@ const OrganizationView = ({
   flag: boolean;
 }) => {
   const [open, setOpen] = useState<boolean>(true);
+  const [editProfile, setEditProfile] = useState<Organization | null>(null);
   const existOrganizations =
     organization.organizations && organization.organizations.length !== 0;
   return (
@@ -59,15 +73,18 @@ const OrganizationView = ({
             flexGrow: 1,
             cursor: existOrganizations ? "pointer" : "initial",
           }}
-          onClick={() => {
-            setOpen(!open);
-          }}
         >
           {existOrganizations && (
             <>
-              <CustomIcon
-                icon={!open ? <KeyboardArrowDown /> : <KeyboardArrowUp />}
-              />
+              <div
+                onClick={() => {
+                  setOpen(!open);
+                }}
+              >
+                <CustomIcon
+                  icon={!open ? <KeyboardArrowDown /> : <KeyboardArrowUp />}
+                />
+              </div>
               <div
                 style={{
                   backgroundColor: "white",
@@ -83,19 +100,38 @@ const OrganizationView = ({
               flexGrow: 1,
             }}
           >
-            <div
+            <Typography
               style={{
-                color: "white",
+                color: colorLum(organization.color),
                 display: "flex",
+                backgroundColor: organization.color,
                 flexGrow: 1,
+                borderTopLeftRadius: existOrganizations ? 0 : 5,
+                borderBottomLeftRadius: existOrganizations ? 0 : 5,
+                borderTopRightRadius: 5,
+                borderBottomRightRadius: 5,
                 alignItems: "center",
                 paddingLeft: 10,
               }}
+              onClick={() => {
+                setOpen(!open);
+              }}
             >
               {organization.name}
-            </div>
+            </Typography>
 
-            <CustomIcon icon={<Add />} />
+            <CustomIcon
+              icon={<Add />}
+              onClick={() => {
+                setEditProfile({
+                  parentOrganizationId: organization.organizationId,
+                  name: "",
+                  color: "",
+                  organizations: [],
+                  members: [],
+                });
+              }}
+            />
             <div
               style={{
                 backgroundColor: "white",
@@ -105,7 +141,19 @@ const OrganizationView = ({
               }}
             ></div>
 
-            <CustomIcon icon={<Edit />} />
+            <CustomIcon
+              icon={<Edit />}
+              onClick={() => {
+                setEditProfile(organization);
+              }}
+            />
+
+            {/* <CustomIcon
+              icon={<Delete />}
+              onClick={() => {
+                console.log("delete");
+              }}
+            /> */}
           </div>
         </div>
       </div>
@@ -141,14 +189,30 @@ const OrganizationView = ({
               paddingRight: 10,
             }}
           >
-            {organization.organizations?.map((value, index) => (
-              <OrganizationView
-                organizations={value}
-                flag={organization.organizations?.length !== index + 1}
-              />
-            ))}
+            {organization.organizations?.map((value, index) => {
+              value.parentOrganizationId = organization.organizationId;
+              return (
+                <OrganizationView
+                  key={index}
+                  organizations={value}
+                  flag={organization.organizations?.length !== index + 1}
+                />
+              );
+            })}
           </div>
         </div>
+      )}
+      {editProfile !== null && (
+        <FullScreenDialog
+          organization={editProfile}
+          onClose={(cancelled) => {
+            if (!cancelled && editProfile.organizationId === undefined) {
+              editProfile.organizationId = "";
+              organization.organizations.push(editProfile);
+            }
+            setEditProfile(null);
+          }}
+        />
       )}
     </div>
   );

@@ -1,96 +1,39 @@
 import { BehaviorSubject } from "rxjs";
-import { Organization, PostProfile, Profile } from "../models/profile";
-import { PeopleServerConnection } from "./serverConnection";
+import { KoboUser } from "../models/KoboUser";
+import { Organization, OrganizationPost } from "./models";
+import { ServerConnection } from "./serverConnection";
 
 export class OrganizationData {
-  users: BehaviorSubject<Profile[]> = new BehaviorSubject<Profile[]>([]);
-  loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
-  server: PeopleServerConnection = new PeopleServerConnection();
+  users: BehaviorSubject<KoboUser[]> = new BehaviorSubject<KoboUser[]>([]);
+  organizations: BehaviorSubject<Organization[]> = new BehaviorSubject<
+    Organization[]
+  >([]);
+  server: ServerConnection = new ServerConnection();
   async load(baseURL: string) {
     await this.server.load(baseURL);
-    await this.refresh();
+    await this.loadData();
   }
-  async refresh() {
-    this.loading.next(true);
-    // await sleep(5000)
-    const response: Profile[] = await this.server.getUsers().catch((error) => {
-      console.log(error);
-      return [];
-    });
+  async loadData() {
+    await this.loadKoboUsers();
+    await this.loadOrganizations();
+  }
+  async loadKoboUsers() {
+    await sleep(100);
+    const response: KoboUser[] = await this.server.getKoboUsers();
     this.users.next(response);
-    this.loading.next(false);
   }
-  async postProfile(profile: PostProfile) {
-    this.loading.next(true);
-    // await sleep(5000)
-    await this.server.postUser(profile).catch((error) => {
-      this.loading.next(false);
-      throw error;
-    });
-    this.loading.next(false);
+  async loadOrganizations() {
+    await sleep(100);
+    const response: Organization[] = await this.server.getOrganizations();
+    this.organizations.next(response);
+  }
+  async updateCreateOrganization(body: OrganizationPost) {
+    await sleep(2000);
+    // throw Error("Custom error");
+    await this.server.updateCreateOrganization(body);
   }
 }
 
-// function sleep(millis: number) {
-//   return new Promise((resolve) => setTimeout(resolve, millis));
-// }
-
-export const organization: Organization = {
-  id: "01",
-  name: "ProAgenda 2030",
-  organizations: [
-    {
-      id: "01-01",
-      name: "GAM 01",
-      organizations: [
-        {
-          id: "01-01-01",
-          name: "CAPyS 01",
-          organizations: [],
-        },
-        {
-          id: "01-01-02",
-          name: "CAPyS 02",
-          organizations: [],
-        },
-        {
-          id: "01-01-02",
-          name: "CAPyS 03",
-          organizations: [],
-        },
-      ],
-    },
-    {
-      id: "01-02",
-      name: "GAM 00",
-      organizations: [],
-    },
-    {
-      id: "01-02",
-      name: "GAM 02",
-      organizations: [
-        {
-          id: "01-01",
-          name: "CAPyS 01",
-          organizations: [
-            {
-              id: "01-01-01",
-              name: "name 01-01-01",
-              organizations: [],
-            },
-            {
-              id: "01-01-02",
-              name: "name 01-01-02",
-              organizations: [],
-            },
-            {
-              id: "01-01-02",
-              name: "name 01-01-02",
-              organizations: [],
-            },
-          ],
-        },
-      ],
-    },
-  ],
-};
+function sleep(millis: number) {
+  return new Promise((resolve) => setTimeout(resolve, millis));
+}

@@ -24,7 +24,11 @@ export interface PostProfile {
   // serviceContinuity: string
 }
 export interface Organization {
-  id: string;
+  organizationId?: string;
+  parentOrganizationId?: string;
   name: string;
-  organizations?: Organization[];
+  color: string;
+  profileId?: string;
+  organizations: Organization[];
+  members: string[];
 }
