@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { KoboUser } from "../models/KoboUser";
+import { KoboUser } from "../../../models/KoboUser";
 import { Organization, OrganizationPost } from "./models";
 import { ServerConnection } from "./serverConnection";
 

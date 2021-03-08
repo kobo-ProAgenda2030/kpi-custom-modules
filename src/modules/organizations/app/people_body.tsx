@@ -3,11 +3,11 @@ import { Add, Edit, KeyboardArrowUp } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { useBehaviorState } from "../../../utils/useBehaviorState";
 import { OrganizationData } from "../data/organization_data";
-import { Organization } from "../models/profile";
 import { KeyboardArrowDown } from "@material-ui/icons";
 import { FullScreenDialog } from "./OrganizationModal";
 import { UseExecuter } from "../../../utils/useExecuter";
 import { colorLum } from "../../../utils/ColorLum";
+import { Organization } from "../../../models/Organization";
 export const organizationData: OrganizationData = new OrganizationData();
 export function OrganizationBody({ baseURL }: { baseURL: string }) {
   const { loading, executer } = UseExecuter();
