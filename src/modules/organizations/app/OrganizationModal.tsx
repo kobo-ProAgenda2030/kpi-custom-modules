@@ -9,10 +9,8 @@ import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
-import { Organization } from "../models/profile";
 import { Card, Checkbox, Grid, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
-import { KoboUser } from "../models/KoboUser";
 import { TwitterPicker } from "react-color";
 import {
   AddBox,
@@ -24,7 +22,9 @@ import {
 import { UseExecuter } from "../../../utils/useExecuter";
 import { useBehaviorState } from "../../../utils/useBehaviorState";
 import { organizationData } from "./people_body";
-import { ProfileModal } from "./Profile";
+import { KoboUser } from "../../../models/KoboUser";
+import { Organization } from "../../../models/Organization";
+import { ProfileModal } from "../../profile/app/Profile";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
