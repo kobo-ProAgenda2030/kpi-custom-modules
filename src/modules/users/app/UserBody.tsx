@@ -7,6 +7,7 @@ import { EditUserProfileDialog } from "./UserEditModal";
 import { UseExecuter } from "../../../utils/useExecuter";
 import { KoboUser } from "../../../models/KoboUser";
 import { CustomIcon } from "../../../utils/CustomIcon";
+import React from "react";
 export const organizationData: OrganizationData = new OrganizationData();
 export function UserBody({ baseURL }: { baseURL: string }) {
   const { loading, executer } = UseExecuter();
