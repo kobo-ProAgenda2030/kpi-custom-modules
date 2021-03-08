@@ -24,6 +24,7 @@ import {
 import { UseExecuter } from "../../../utils/useExecuter";
 import { useBehaviorState } from "../../../utils/useBehaviorState";
 import { organizationData } from "./people_body";
+import { ProfileModal } from "./Profile";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -53,6 +54,10 @@ export function FullScreenDialog({
   onClose: (cancelled: boolean) => void;
 }) {
   const classes = useStyles();
+
+  const [organizationSelected, setProfileId] = useState<Organization | null>(
+    null
+  );
   const [didMount, setDidMount] = useState(false);
   const koboUsers: KoboUser[] = useBehaviorState(organizationData.users);
   const [usersSelected, setUsersSelected] = React.useState<KoboUser[]>([]);
@@ -143,7 +148,14 @@ export function FullScreenDialog({
               }}
             />
           </Grid>
-          <Grid item xs={4} style={{ ...gridStyle, display: "flex" }}>
+          <Grid
+            item
+            xs={4}
+            style={{ ...gridStyle, display: "flex" }}
+            onClick={() => {
+              setProfileId(organization);
+            }}
+          >
             {organization.profileId === undefined ? (
               <Button
                 disabled={loading}
@@ -241,6 +253,15 @@ export function FullScreenDialog({
           </Grid>
         </Grid>
       </Dialog>
+      {organizationSelected !== null && (
+        <ProfileModal
+          organization={organizationSelected}
+          onClose={() => {
+            setProfileId(null);
+            console.log("onclose");
+          }}
+        />
+      )}
     </div>
   );
 }

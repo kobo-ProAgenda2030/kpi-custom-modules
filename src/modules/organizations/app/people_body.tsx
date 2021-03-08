@@ -5,7 +5,7 @@ import { useBehaviorState } from "../../../utils/useBehaviorState";
 import { OrganizationData } from "../data/organization_data";
 import { Organization } from "../models/profile";
 import { KeyboardArrowDown } from "@material-ui/icons";
-import { FullScreenDialog } from "./modal";
+import { FullScreenDialog } from "./OrganizationModal";
 import { UseExecuter } from "../../../utils/useExecuter";
 import { colorLum } from "../../../utils/ColorLum";
 export const organizationData: OrganizationData = new OrganizationData();
