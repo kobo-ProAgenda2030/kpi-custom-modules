@@ -42,7 +42,7 @@ export function ProfileModal({
 }) {
   const classes = useStyles();
   const existProfile = organization.profileId !== undefined;
-  const { loading, error, executer } = UseExecuter();
+  const { loading, executer } = UseExecuter();
   const [formation, setFormation] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
