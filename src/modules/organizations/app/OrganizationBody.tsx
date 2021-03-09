@@ -24,6 +24,8 @@ export function OrganizationBody({ baseURL }: { baseURL: string }) {
     <div
       style={{
         width: "calc(100% - 40px)",
+        height: "100%",
+        overflowY: "scroll",
         padding: 20,
       }}
     >

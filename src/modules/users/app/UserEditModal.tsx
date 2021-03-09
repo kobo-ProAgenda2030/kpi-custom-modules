@@ -13,11 +13,7 @@ import { Checkbox, Chip, Grid, TextField } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CheckBox, CheckBoxOutlineBlank } from "@material-ui/icons";
 import { UseExecuter } from "../../../utils/useExecuter";
-import { useBehaviorState } from "../../../utils/useBehaviorState";
-import { organizationData } from "./UserBody";
 import { KoboUser, KoboUserOrganization } from "../../../models/KoboUser";
-import { Organization } from "../../../models/Organization";
-import { ProfileModal } from "../../profile/app/Profile";
 import { UserRol, userRoles } from "../../../models/UserRol";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -41,28 +37,25 @@ const Transition = React.forwardRef(function Transition(
 });
 const gridStyle: React.CSSProperties = { padding: 10 };
 export function EditUserProfileDialog({
-  organization,
+  koboUser,
   onClose,
 }: {
-  organization: KoboUser;
+  koboUser: KoboUser;
   onClose: (cancelled: boolean) => void;
 }) {
   const classes = useStyles();
 
-  const [organizationSelected, setProfileId] = useState<Organization | null>(
-    null
-  );
   const [didMount, setDidMount] = useState(false);
   const [usersSelected, setUsersSelected] = React.useState<UserRol[]>([]);
   const [organizationsSelected, setOrganizationsSelected] = React.useState<
     KoboUserOrganization[]
-  >(organization.organizations);
-  const { loading, error, executer } = UseExecuter();
+  >(koboUser.organizations);
+  const { loading, error } = UseExecuter();
   useEffect(() => {
-    if (organization !== null) {
+    if (koboUser !== null) {
       // setName(organization.name);
       const users: UserRol[] = [];
-      organization.roles.forEach((user) => {
+      koboUser.roles.forEach((user) => {
         const userFound = userRoles.find((KoboUser) => {
           return user === KoboUser.id;
         });
@@ -72,7 +65,7 @@ export function EditUserProfileDialog({
     }
     setDidMount(true);
     return () => setDidMount(false);
-  }, [organization]);
+  }, [koboUser]);
   if (!didMount) {
     return null;
   }
@@ -169,7 +162,7 @@ export function EditUserProfileDialog({
               disabled={loading}
               multiple
               id="checkboxes-tags-demo"
-              options={organization.organizations}
+              options={koboUser.organizations}
               fullWidth
               value={organizationsSelected}
               onChange={(event: any, newValue: KoboUserOrganization[]) => {
@@ -214,15 +207,6 @@ export function EditUserProfileDialog({
           </Grid>
         </Grid>
       </Dialog>
-      {organizationSelected !== null && (
-        <ProfileModal
-          organization={organizationSelected}
-          onClose={() => {
-            setProfileId(null);
-            console.log("onclose");
-          }}
-        />
-      )}
     </div>
   );
 }

@@ -21,10 +21,10 @@ import {
 } from "@material-ui/icons";
 import { UseExecuter } from "../../../utils/useExecuter";
 import { useBehaviorState } from "../../../utils/useBehaviorState";
-import { organizationData } from "./people_body";
+import { organizationData } from "./OrganizationBody";
 import { KoboUser } from "../../../models/KoboUser";
 import { Organization } from "../../../models/Organization";
-import { ProfileModal } from "../../profile/app/Profile";
+import { ProfileModal } from "./Profile";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({

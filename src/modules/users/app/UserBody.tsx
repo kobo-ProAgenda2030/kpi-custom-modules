@@ -22,15 +22,15 @@ export function UserBody({ baseURL }: { baseURL: string }) {
     <div
       style={{
         width: "calc(100% - 40px)",
+        height: "100%",
+        overflowY: "scroll",
         padding: 20,
       }}
     >
       {loading ? (
         <LinearProgress style={{ width: "100%" }} />
       ) : organizations.length !== 0 ? (
-        organizations.map((user) => (
-          <OrganizationView organizations={user} flag={false} />
-        ))
+        organizations.map((user) => <OrganizationView organizations={user} />)
       ) : (
         <div>No hay organizaciones diponibles</div>
       )}
@@ -40,10 +40,8 @@ export function UserBody({ baseURL }: { baseURL: string }) {
 
 const OrganizationView = ({
   organizations: organization,
-  flag,
 }: {
   organizations: KoboUser;
-  flag: boolean;
 }) => {
   const [open, setOpen] = useState<boolean>(true);
   const [editProfile, setEditProfile] = useState<KoboUser | null>(null);
@@ -113,12 +111,9 @@ const OrganizationView = ({
       </div>
       {editProfile !== null && (
         <EditUserProfileDialog
-          organization={editProfile}
+          koboUser={editProfile}
           onClose={(cancelled) => {
-            // if (!cancelled && editProfile.organizationId === undefined) {
-            //   editProfile.organizationId = "";
-            //   // organization.organizations.push(editProfile);
-            // }
+            console.log(cancelled);
             setEditProfile(null);
           }}
         />

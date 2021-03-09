@@ -29,12 +29,7 @@ class CustomSession {
     let response = false;
     const currentSession = this.load();
     if (currentSession !== null) {
-      if (currentSession.id === "super_admin") {
-        currentSession.assets = ["forms", "library", "users", "organizations"];
-      } else {
-        currentSession.assets = ["users", "organizations"];
-      }
-      response = currentSession.assets.indexOf(screen) >= 0;
+      response = currentSession.roles.indexOf(screen) >= 0;
     }
     return response;
   }
