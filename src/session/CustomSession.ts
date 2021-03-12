@@ -1,37 +1,14 @@
+import { KoboUserResource } from "../models/KoboUser";
+import { services } from "../service/services";
+
 class CustomSession {
-  async login(url: string, username: string, password: string) {
-    const response: Response = await fetch(`${url}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        username,
-        password,
-      }),
-    });
-    if (response.status === 200) {
-      localStorage.setItem("customSession", await response.text());
-    } else {
-      throw Error("No autorizado");
-    }
+  assets: string[] = [];
+  async load(): Promise<void> {
+    const koboUserResource: KoboUserResource = await services.getKoboUserResources();
+    this.assets = koboUserResource.assets.map((value) => value.name);
   }
-  logout() {
-    localStorage.removeItem("customSession");
-  }
-  load(): any | null {
-    const session = localStorage.getItem("customSession");
-    let response;
-    if (session !== null) {
-      response = JSON.parse(session);
-    }
-    return response;
-  }
-  hasAccess(screen: string): boolean {
-    let response = false;
-    const currentSession = this.load();
-    if (currentSession !== null) {
-      response = currentSession.roles.indexOf(screen) >= 0;
-    }
-    return response;
+  hasAccess(asset: string): boolean {
+    return this.assets.indexOf(asset) >= 0;
   }
 }
 
