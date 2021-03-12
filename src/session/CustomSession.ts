@@ -1,17 +1,17 @@
 import { KoboUserResource } from "../models/KoboUser";
-import { ServerConnection } from "../service/serverConnection";
-import { services } from "../service/services";
+import { Services } from "../service/services";
 
-class CustomSession {
+export class CustomSession {
+  server: Services = new Services();
   assets: string[] = [];
+  constructor(baseURL: string) {
+    this.server.load(baseURL);
+  }
   async load(): Promise<void> {
-    const koboUserResource: KoboUserResource = await services.getKoboUserResources();
+    const koboUserResource: KoboUserResource = await this.server.getKoboUserResources();
     this.assets = koboUserResource.assets.map((value) => value.name);
   }
   hasAccess(asset: string): boolean {
     return this.assets.indexOf(asset) >= 0;
   }
 }
-
-export const serverConnection = new ServerConnection("http://localhost:63253");
-export const customSession: CustomSession = new CustomSession();
