@@ -9,7 +9,13 @@ import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
-import { Card, Checkbox, Grid, TextField } from "@material-ui/core";
+import {
+  Card,
+  Checkbox,
+  Grid,
+  LinearProgress,
+  TextField,
+} from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { TwitterPicker } from "react-color";
 import {
@@ -51,14 +57,12 @@ export function FullScreenDialog({
   onClose,
 }: {
   organization: Organization;
-  onClose: (cancelled: boolean) => void;
+  onClose: () => void;
 }) {
   const classes = useStyles();
-
   const [organizationSelected, setProfileId] = useState<Organization | null>(
     null
   );
-  const [didMount, setDidMount] = useState(false);
   const koboUsers: KoboUser[] = useBehaviorState(organizationData.users);
   const [usersSelected, setUsersSelected] = React.useState<KoboUser[]>([]);
   const { loading, error, executer } = UseExecuter();
@@ -75,21 +79,16 @@ export function FullScreenDialog({
         if (userFound !== undefined) users.push(userFound);
       });
       setUsersSelected(users);
-      setColor(organization.color);
+      setColor(organization.color || "");
     }
-    setDidMount(true);
-    return () => setDidMount(false);
   }, [organization]);
-  if (!didMount) {
-    return null;
-  }
+  const newOrganization = organization.organizationId === undefined;
   return (
     <div>
       <Dialog
         disableBackdropClick
         fullWidth
         open
-        onClose={onClose}
         TransitionComponent={Transition}
       >
         <AppBar className={classes.appBar}>
@@ -98,15 +97,13 @@ export function FullScreenDialog({
               disabled={loading}
               edge="start"
               color="inherit"
-              onClick={() => onClose(true)}
+              onClick={onClose}
               aria-label="close"
             >
               <CloseIcon />
             </IconButton>
             <Typography variant="h6" className={classes.title}>
-              {organization.organizationId === undefined
-                ? "Nuevo"
-                : "Editar Organizacion"}
+              {newOrganization ? "Nuevo" : "Editar Organizacion"}
             </Typography>
             <Button
               disabled={loading}
@@ -114,29 +111,31 @@ export function FullScreenDialog({
               color="inherit"
               onClick={() => {
                 if (organization !== null) {
-                  executer(async () => {
-                    await organizationData.updateCreateOrganization({
-                      organizationId: organization.organizationId,
-                      parentOrganizationId: organization.parentOrganizationId,
-                      name: name,
-                      color: "",
-                      profileId: organization.profileId,
-                      members: usersSelected.map((user) => user.id),
-                    });
-                    organization.name = name;
-                    organization.members = usersSelected.map((user) => user.id);
-                    organization.color = color;
-                    onClose(false);
-                  });
+                  executer(
+                    async () => {
+                      await organizationData.server.updateCreateOrganization({
+                        organizationId: organization.organizationId,
+                        parentOrganizationId: organization.parentOrganizationId,
+                        name: name,
+                        color: color,
+                        members: usersSelected.map((user) => user.id),
+                      });
+                      await organizationData.loadOrganizations();
+                    },
+                    () => {
+                      onClose();
+                    }
+                  );
                 }
               }}
             >
-              {organization.organizationId === undefined ? "Crear" : "Guardar"}
+              {newOrganization ? "Crear" : "Guardar"}
             </Button>
           </Toolbar>
         </AppBar>
+        {loading && <LinearProgress style={{ width: "100%" }} />}
         <Grid container style={{ paddingTop: 20, paddingBottom: 10 }}>
-          <Grid item xs={8} style={gridStyle}>
+          <Grid item xs={newOrganization ? 12 : 8} style={gridStyle}>
             <TextField
               disabled={loading}
               fullWidth
@@ -148,48 +147,50 @@ export function FullScreenDialog({
               }}
             />
           </Grid>
-          <Grid
-            item
-            xs={4}
-            style={{ ...gridStyle, display: "flex" }}
-            onClick={() => {
-              setProfileId(organization);
-            }}
-          >
-            {organization.profileId === undefined ? (
-              <Button
-                disabled={loading}
-                fullWidth
-                variant="outlined"
-                color="primary"
-                startIcon={<AddBox />}
-              >
-                Crear perfil
-              </Button>
-            ) : (
-              <Button
-                disabled={loading}
-                fullWidth
-                variant="outlined"
-                color="primary"
-                startIcon={<Edit />}
-              >
-                Editar perfil
-              </Button>
-            )}
-          </Grid>
-          <Grid item xs={12} style={gridStyle}>
-            <Card style={{ height: 50, backgroundColor: color }} />
-          </Grid>
+          {!newOrganization && (
+            <Grid
+              item
+              xs={4}
+              style={{ ...gridStyle, display: "flex" }}
+              onClick={() => {
+                setProfileId(organization);
+              }}
+            >
+              {organization.profileId === null ? (
+                <Button
+                  disabled={loading}
+                  fullWidth
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<AddBox />}
+                >
+                  Crear perfil
+                </Button>
+              ) : (
+                <Button
+                  disabled={loading}
+                  fullWidth
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<Edit />}
+                >
+                  Editar perfil
+                </Button>
+              )}
+            </Grid>
+          )}
           <Grid item xs={12} style={gridStyle}>
             <TwitterPicker
               color={color}
               width={"100%"}
+              triangle="hide"
               onChange={(newColor) => {
                 setColor(newColor.hex);
-                console.log(newColor);
               }}
             />
+          </Grid>
+          <Grid item xs={12} style={gridStyle}>
+            <Card style={{ height: 50, backgroundColor: color }} />
           </Grid>
           <Grid item xs={12} style={gridStyle}>
             <Autocomplete
@@ -200,7 +201,6 @@ export function FullScreenDialog({
               fullWidth
               value={usersSelected}
               onChange={(event: any, newValue: KoboUser[]) => {
-                console.log(newValue);
                 setUsersSelected(newValue);
               }}
               disableCloseOnSelect
@@ -242,6 +242,22 @@ export function FullScreenDialog({
                 disabled={loading}
                 variant="contained"
                 color="secondary"
+                onClick={() => {
+                  if (organization !== null) {
+                    executer(
+                      async () => {
+                        if (organization.organizationId !== undefined)
+                          await organizationData.server.deleteOrganization(
+                            organization.organizationId
+                          );
+                        await organizationData.loadOrganizations();
+                      },
+                      () => {
+                        onClose();
+                      }
+                    );
+                  }
+                }}
                 startIcon={<Delete />}
               >
                 Eliminar Organizacion
@@ -258,7 +274,6 @@ export function FullScreenDialog({
           organization={organizationSelected}
           onClose={() => {
             setProfileId(null);
-            console.log("onclose");
           }}
         />
       )}

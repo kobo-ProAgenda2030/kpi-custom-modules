@@ -20,6 +20,9 @@ export function OrganizationBody({ baseURL }: { baseURL: string }) {
       await organizationData.load(baseURL);
     });
   }, [baseURL]);
+  const organization = organizations.find(
+    (value) => value.organizationId === "1"
+  );
   return (
     <div
       style={{
@@ -31,8 +34,8 @@ export function OrganizationBody({ baseURL }: { baseURL: string }) {
     >
       {loading ? (
         <LinearProgress style={{ width: "100%" }} />
-      ) : organizations.length !== 0 ? (
-        <OrganizationView organizations={organizations[0]} flag={false} />
+      ) : organization ? (
+        <OrganizationView organizations={organization} flag={false} />
       ) : (
         <div>No hay organizaciones diponibles</div>
       )}
@@ -51,6 +54,7 @@ const OrganizationView = ({
   const [editProfile, setEditProfile] = useState<Organization | null>(null);
   const existOrganizations =
     organization.organizations && organization.organizations.length !== 0;
+
   return (
     <div
       style={{
@@ -149,13 +153,6 @@ const OrganizationView = ({
                 setEditProfile(organization);
               }}
             />
-
-            {/* <CustomIcon
-              icon={<Delete />}
-              onClick={() => {
-                console.log("delete");
-              }}
-            /> */}
           </div>
         </div>
       </div>
@@ -207,11 +204,7 @@ const OrganizationView = ({
       {editProfile !== null && (
         <FullScreenDialog
           organization={editProfile}
-          onClose={(cancelled) => {
-            if (!cancelled && editProfile.organizationId === undefined) {
-              editProfile.organizationId = "";
-              organization.organizations.push(editProfile);
-            }
+          onClose={() => {
             setEditProfile(null);
           }}
         />

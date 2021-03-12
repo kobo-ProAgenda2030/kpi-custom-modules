@@ -9,9 +9,10 @@ import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
-import { Grid, TextField } from "@material-ui/core";
+import { Grid, LinearProgress, TextField } from "@material-ui/core";
 import { Organization } from "../../../models/Organization";
 import { UseExecuter } from "../../../utils/useExecuter";
+import { organizationData } from "./OrganizationBody";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,8 +42,8 @@ export function ProfileModal({
   onClose: () => void;
 }) {
   const classes = useStyles();
-  const existProfile = organization.profileId !== undefined;
-  const { loading, executer } = UseExecuter();
+  const existProfile = organization.profileId !== null;
+  const { loading, executer, error } = UseExecuter();
   const [formation, setFormation] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
@@ -63,42 +64,31 @@ export function ProfileModal({
   const [serviceContinuity, setServiceContinuity] = useState("");
 
   useEffect(() => {
-    executer(async () => {
-      if (existProfile) {
-        const profile = {
-          id: "string",
-          formation: "string",
-          address: "string",
-          phone: "string",
-          professionals: 1,
-          employes: 2,
-          department: "string",
-          province: "string",
-          municipality: "string",
-          waterConnections: 1,
-          connectionsWithMeter: 2,
-          connectionsWithoutMeter: 3,
-          publicPools: 4,
-          latrines: 5,
-          serviceContinuity: "string",
-        };
-        setFormation(profile.formation);
-        setAddress(profile.address);
-        setPhone(profile.phone);
-        setProfessionals(profile.professionals);
-        setEmployes(profile.employes);
-        setDepartment(profile.department);
-        setProvince(profile.province);
-        setMunicipality(profile.municipality);
-        setWaterConnections(profile.waterConnections);
-        setConnectionsWithMeter(profile.connectionsWithMeter);
-        setConnectionsWithoutMeter(profile.connectionsWithoutMeter);
-        setPublicPools(profile.publicPools);
-        setLatrines(profile.latrines);
-        setServiceContinuity(profile.serviceContinuity);
-      }
-    });
+    if (existProfile) {
+      executer(async () => {
+        if (organization.profileId) {
+          const profile = await organizationData.server.getProfile(
+            organization.profileId
+          );
+          setFormation(profile.formation);
+          setAddress(profile.address);
+          setPhone(profile.phone);
+          setProfessionals(profile.professionals);
+          setEmployes(profile.employes);
+          setDepartment(profile.department);
+          setProvince(profile.province);
+          setMunicipality(profile.municipality);
+          setWaterConnections(profile.waterConnections);
+          setConnectionsWithMeter(profile.connectionsWithMeter);
+          setConnectionsWithoutMeter(profile.connectionsWithoutMeter);
+          setPublicPools(profile.publicPools);
+          setLatrines(profile.latrines);
+          setServiceContinuity(profile.serviceContinuity);
+        }
+      });
+    }
   }, [organization]);
+
   return (
     <div>
       <Dialog
@@ -128,15 +118,40 @@ export function ProfileModal({
               autoFocus
               color="inherit"
               onClick={() => {
-                organization.profileId = "";
-                onClose();
+                executer(async () => {
+                  const response = await organizationData.server.updateCreateProfile(
+                    {
+                      id: organization.profileId,
+                      formation: formation,
+                      address: address,
+                      phone: phone,
+                      professionals: Number(professionals),
+                      employes: Number(employes),
+                      department: department,
+                      province: province,
+                      municipality: municipality,
+                      waterConnections: Number(waterConnections),
+                      connectionsWithMeter: Number(connectionsWithMeter),
+                      connectionsWithoutMeter: Number(connectionsWithoutMeter),
+                      publicPools: Number(publicPools),
+                      latrines: Number(latrines),
+                      serviceContinuity: serviceContinuity,
+                    }
+                  );
+                  organization.profileId = response.profileId;
+                  onClose();
+                });
               }}
             >
               {!existProfile ? "Crear" : "Guardar"}
             </Button>
           </Toolbar>
+          {loading && <LinearProgress style={{ width: "100%" }} />}
         </AppBar>
         <Grid container style={{ paddingTop: 20, paddingBottom: 10 }}>
+          <Grid item xs={12} style={{ ...gridStyle, color: "red" }}>
+            {error}
+          </Grid>
           <Grid item xs={12} style={gridStyle}>
             <TextField
               disabled={loading}
