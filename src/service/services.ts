@@ -19,7 +19,7 @@ export class Services {
     );
   }
   async updateKoboUser(body: KoboUserPost): Promise<void> {
-    await this.serverConnection.post("/koboUser", body);
+    await this.serverConnection.post("/KoboUser", body);
   }
   //Organization management
   async getAllOrganizations(): Promise<Organization[]> {
