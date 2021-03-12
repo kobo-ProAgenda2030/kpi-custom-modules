@@ -1,4 +1,5 @@
 import React from "react";
+import { OrganizationBody } from "./modules/organizations/app/OrganizationBody";
 import { UserBody } from "./modules/users/app/UserBody";
 
 export function App() {

@@ -111,21 +111,17 @@ export function FullScreenDialog({
               color="inherit"
               onClick={() => {
                 if (organization !== null) {
-                  executer(
-                    async () => {
-                      await organizationData.server.updateCreateOrganization({
-                        organizationId: organization.organizationId,
-                        parentOrganizationId: organization.parentOrganizationId,
-                        name: name,
-                        color: color,
-                        members: usersSelected.map((user) => user.id),
-                      });
-                      await organizationData.loadOrganizations();
-                    },
-                    () => {
-                      onClose();
-                    }
-                  );
+                  executer(async () => {
+                    await organizationData.server.updateCreateOrganization({
+                      organizationId: organization.organizationId,
+                      parentOrganizationId: organization.parentOrganizationId,
+                      name: name,
+                      color: color,
+                      members: usersSelected.map((user) => user.id),
+                    });
+                    await organizationData.loadOrganizations();
+                    onClose();
+                  });
                 }
               }}
             >
@@ -244,18 +240,14 @@ export function FullScreenDialog({
                 color="secondary"
                 onClick={() => {
                   if (organization !== null) {
-                    executer(
-                      async () => {
-                        if (organization.organizationId !== undefined)
-                          await organizationData.server.deleteOrganization(
-                            organization.organizationId
-                          );
-                        await organizationData.loadOrganizations();
-                      },
-                      () => {
-                        onClose();
-                      }
-                    );
+                    executer(async () => {
+                      if (organization.organizationId !== undefined)
+                        await organizationData.server.deleteOrganization(
+                          organization.organizationId
+                        );
+                      await organizationData.loadOrganizations();
+                      onClose();
+                    });
                   }
                 }}
                 startIcon={<Delete />}

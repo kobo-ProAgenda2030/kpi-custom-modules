@@ -1,4 +1,5 @@
 import { KoboUserResource } from "../models/KoboUser";
+import { ServerConnection } from "../service/serverConnection";
 import { services } from "../service/services";
 
 class CustomSession {
@@ -12,4 +13,5 @@ class CustomSession {
   }
 }
 
+export const serverConnection = new ServerConnection("http://localhost:63253");
 export const customSession: CustomSession = new CustomSession();

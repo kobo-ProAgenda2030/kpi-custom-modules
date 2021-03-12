@@ -10,7 +10,7 @@ import { colorLum } from "../../../utils/ColorLum";
 import { Organization } from "../../../models/Organization";
 export const organizationData: OrganizationData = new OrganizationData();
 export function OrganizationBody({ baseURL }: { baseURL: string }) {
-  const { loading, executer } = UseExecuter();
+  const { loading, executer, error } = UseExecuter();
   const organizations: Organization[] = useBehaviorState(
     organizationData.organizations
   );
@@ -37,7 +37,7 @@ export function OrganizationBody({ baseURL }: { baseURL: string }) {
       ) : organization ? (
         <OrganizationView organizations={organization} flag={false} />
       ) : (
-        <div>No hay organizaciones diponibles</div>
+        <div style={{ color: "red" }}>{error}</div>
       )}
     </div>
   );
