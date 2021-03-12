@@ -9,12 +9,20 @@ import Typography from "@material-ui/core/Typography";
 import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
-import { Checkbox, Chip, Grid, TextField } from "@material-ui/core";
+import {
+  Checkbox,
+  Chip,
+  Grid,
+  LinearProgress,
+  TextField,
+} from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CheckBox, CheckBoxOutlineBlank } from "@material-ui/icons";
 import { UseExecuter } from "../../../utils/useExecuter";
 import { KoboUser, KoboUserOrganization } from "../../../models/KoboUser";
-import { UserRol, userRoles } from "../../../models/UserRol";
+import { UserRole } from "../../../models/UserRole";
+import { organizationData } from "./UserBody";
+import { useBehaviorState } from "../../../utils/useBehaviorState";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -41,27 +49,30 @@ export function EditUserProfileDialog({
   onClose,
 }: {
   koboUser: KoboUser;
-  onClose: (cancelled: boolean) => void;
+  onClose: () => void;
 }) {
   const classes = useStyles();
 
   const [didMount, setDidMount] = useState(false);
-  const [usersSelected, setUsersSelected] = React.useState<UserRol[]>([]);
+  const [rolesSelected, setRolesSelected] = React.useState<UserRole[]>([]);
   const [organizationsSelected, setOrganizationsSelected] = React.useState<
     KoboUserOrganization[]
   >(koboUser.organizations);
-  const { loading, error } = UseExecuter();
+
+  const userRoles: UserRole[] = useBehaviorState(organizationData.userRoles);
+
+  const { loading, executer, error } = UseExecuter();
   useEffect(() => {
     if (koboUser !== null) {
       // setName(organization.name);
-      const users: UserRol[] = [];
+      const users: UserRole[] = [];
       koboUser.roles.forEach((user) => {
         const userFound = userRoles.find((KoboUser) => {
-          return user === KoboUser.id;
+          return user === KoboUser.roleId;
         });
         if (userFound !== undefined) users.push(userFound);
       });
-      setUsersSelected(users);
+      setRolesSelected(users);
     }
     setDidMount(true);
     return () => setDidMount(false);
@@ -85,7 +96,7 @@ export function EditUserProfileDialog({
               disabled={loading}
               edge="start"
               color="inherit"
-              onClick={() => onClose(true)}
+              onClick={onClose}
               aria-label="close"
             >
               <CloseIcon />
@@ -98,28 +109,25 @@ export function EditUserProfileDialog({
               autoFocus
               color="inherit"
               onClick={() => {
-                // if (organization !== null) {
-                //   executer(async () => {
-                //     await organizationData.updateCreateOrganization({
-                //       organizationId: organization.organizationId,
-                //       parentOrganizationId: organization.parentOrganizationId,
-                //       name: name,
-                //       color: "",
-                //       profileId: organization.profileId,
-                //       members: usersSelected.map((user) => user.id),
-                //     });
-                //     organization.name = name;
-                //     organization.members = usersSelected.map((user) => user.id);
-                //     organization.color = color;
-                //     onClose(false);
-                //   });
-                // }
+                executer(async () => {
+                  await organizationData.server.updateKoboUser({
+                    id: koboUser.id,
+                    roles: rolesSelected.map((value) => value.roleId),
+                    organizations: organizationsSelected.map(
+                      (value) => value.organizationId
+                    ),
+                  });
+                  await organizationData.loadKoboUsers();
+                  onClose();
+                });
               }}
             >
               Guardar
             </Button>
           </Toolbar>
         </AppBar>
+
+        {loading && <LinearProgress style={{ width: "100%" }} />}
         <Grid container style={{ paddingTop: 20, paddingBottom: 10 }}>
           <Grid item xs={12} style={gridStyle}>
             <Autocomplete
@@ -128,10 +136,9 @@ export function EditUserProfileDialog({
               id="checkboxes-tags-demo"
               options={userRoles}
               fullWidth
-              value={usersSelected}
-              onChange={(event: any, newValue: UserRol[]) => {
-                console.log(newValue);
-                setUsersSelected(newValue);
+              value={rolesSelected}
+              onChange={(event: any, newValue: UserRole[]) => {
+                setRolesSelected(newValue);
               }}
               disableCloseOnSelect
               disableClearable
@@ -166,7 +173,6 @@ export function EditUserProfileDialog({
               fullWidth
               value={organizationsSelected}
               onChange={(event: any, newValue: KoboUserOrganization[]) => {
-                console.log(newValue);
                 setOrganizationsSelected(newValue);
               }}
               disableCloseOnSelect

@@ -10,7 +10,7 @@ import { CustomIcon } from "../../../utils/CustomIcon";
 import React from "react";
 export const organizationData: OrganizationData = new OrganizationData();
 export function UserBody({ baseURL }: { baseURL: string }) {
-  const { loading, executer } = UseExecuter();
+  const { loading, executer, error } = UseExecuter();
   const organizations: KoboUser[] = useBehaviorState(organizationData.users);
 
   useEffect(() => {
@@ -30,9 +30,11 @@ export function UserBody({ baseURL }: { baseURL: string }) {
       {loading ? (
         <LinearProgress style={{ width: "100%" }} />
       ) : organizations.length !== 0 ? (
-        organizations.map((user) => <OrganizationView organizations={user} />)
+        organizations.map((user, index) => (
+          <OrganizationView key={index} organizations={user} />
+        ))
       ) : (
-        <div>No hay organizaciones diponibles</div>
+        <div style={{ color: "red" }}>{error}</div>
       )}
     </div>
   );
@@ -78,7 +80,6 @@ const OrganizationView = ({
               style={{
                 color: "white",
                 display: "flex",
-                // backgroundColor: organization.color,
                 flexGrow: 1,
                 borderRadius: 5,
                 alignItems: "center",
@@ -112,8 +113,7 @@ const OrganizationView = ({
       {editProfile !== null && (
         <EditUserProfileDialog
           koboUser={editProfile}
-          onClose={(cancelled) => {
-            console.log(cancelled);
+          onClose={() => {
             setEditProfile(null);
           }}
         />
