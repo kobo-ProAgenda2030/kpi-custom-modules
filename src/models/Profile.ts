@@ -17,7 +17,7 @@ export interface Profile {
 }
 
 export interface PostProfile {
-  id: string | null;
+  id?: string;
   formation: string;
   address: string;
   phone: string;

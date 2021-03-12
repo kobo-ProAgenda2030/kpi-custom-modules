@@ -7,3 +7,10 @@ export interface Organization {
   organizations: Organization[];
   members: string[];
 }
+export interface OrganizationPost {
+  organizationId?: string;
+  parentOrganizationId?: string;
+  name: string;
+  color: string;
+  members: string[];
+}

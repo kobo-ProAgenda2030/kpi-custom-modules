@@ -4,9 +4,22 @@ export interface KoboUser {
   roles: string[];
   organizations: KoboUserOrganization[];
 }
+export interface KoboUserResource {
+  assets: {
+    name: string;
+  }[];
+  organizations: KoboUserOrganization[];
+}
+
 export interface KoboUserOrganization {
   organizationId: string;
   name: string;
   color: string;
   profileId: string;
+}
+
+export interface KoboUserPost {
+  id: string;
+  roles: string[];
+  organizations: string[];
 }
