@@ -23,7 +23,11 @@ export class Services {
   }
   //Organization management
   async getAllOrganizations(): Promise<Organization[]> {
-    return this.serverConnection.get<Organization[]>("/Organization/All");
+    const response: Organization[] = await this.serverConnection.get<
+      Organization[]
+    >("/Organization/All");
+    sortOrganizations(response);
+    return response;
   }
   async updateCreateOrganization(
     body: OrganizationPost
@@ -57,3 +61,9 @@ export class Services {
   }
 }
 export const services = new Services();
+function sortOrganizations(organizations: Organization[]) {
+  organizations.sort((a, b) => a.name.localeCompare(b.name));
+  organizations.forEach((organization) =>
+    sortOrganizations(organization.organizations)
+  );
+}

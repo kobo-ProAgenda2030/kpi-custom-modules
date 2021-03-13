@@ -10,9 +10,9 @@ import CloseIcon from "@material-ui/icons/Close";
 import Slide from "@material-ui/core/Slide";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { Grid, LinearProgress, TextField } from "@material-ui/core";
-import { Organization } from "../../../models/Organization";
-import { UseExecuter } from "../../../utils/useExecuter";
-import { organizationData } from "./OrganizationBody";
+import { Organization } from "../../models/Organization";
+import { UseExecuter } from "../../utils/useExecuter";
+import { dataController } from "../../controller/DataController";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -67,7 +67,7 @@ export function ProfileModal({
     if (existProfile) {
       executer(async () => {
         if (organization.profileId) {
-          const profile = await organizationData.server.getProfile(
+          const profile = await dataController.server.getProfile(
             organization.profileId
           );
           setFormation(profile.formation);
@@ -119,7 +119,7 @@ export function ProfileModal({
               color="inherit"
               onClick={() => {
                 executer(async () => {
-                  const response = await organizationData.server.updateCreateProfile(
+                  const response = await dataController.server.updateCreateProfile(
                     {
                       id: organization.profileId,
                       formation: formation,

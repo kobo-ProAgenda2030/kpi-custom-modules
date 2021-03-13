@@ -1,28 +1,25 @@
 import { LinearProgress, Typography } from "@material-ui/core";
 import { Add, Edit, KeyboardArrowUp } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
-import { useBehaviorState } from "../../../utils/useBehaviorState";
-import { OrganizationData } from "../data/organization_data";
+import { useBehaviorState } from "../../utils/useBehaviorState";
 import { KeyboardArrowDown } from "@material-ui/icons";
 import { FullScreenDialog } from "./OrganizationModal";
-import { UseExecuter } from "../../../utils/useExecuter";
-import { colorLum } from "../../../utils/ColorLum";
-import { Organization } from "../../../models/Organization";
-export const organizationData: OrganizationData = new OrganizationData();
+import { UseExecuter } from "../../utils/useExecuter";
+import { colorLum } from "../../utils/ColorLum";
+import { Organization } from "../../models/Organization";
+import { dataController } from "../../controller/DataController";
+
 export function OrganizationBody({ baseURL }: { baseURL: string }) {
   const { loading, executer, error } = UseExecuter();
   const organizations: Organization[] = useBehaviorState(
-    organizationData.organizations
+    dataController.organizations
   );
 
   useEffect(() => {
     executer(async () => {
-      await organizationData.load(baseURL);
+      await dataController.load(baseURL);
     });
   }, [baseURL]);
-  const organization = organizations.find(
-    (value) => value.organizationId === "1"
-  );
   return (
     <div
       style={{
@@ -34,8 +31,10 @@ export function OrganizationBody({ baseURL }: { baseURL: string }) {
     >
       {loading ? (
         <LinearProgress style={{ width: "100%" }} />
-      ) : organization ? (
-        <OrganizationView organizations={organization} flag={false} />
+      ) : organizations ? (
+        organizations.map((organization) => (
+          <OrganizationView organizations={organization} flag={false} />
+        ))
       ) : (
         <div style={{ color: "red" }}>{error}</div>
       )}

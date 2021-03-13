@@ -1,21 +1,21 @@
 import { LinearProgress, Typography } from "@material-ui/core";
 import { Edit } from "@material-ui/icons";
 import { useEffect, useState } from "react";
-import { useBehaviorState } from "../../../utils/useBehaviorState";
-import { OrganizationData } from "../data/organization_data";
+import { useBehaviorState } from "../../utils/useBehaviorState";
 import { EditUserProfileDialog } from "./UserEditModal";
-import { UseExecuter } from "../../../utils/useExecuter";
-import { KoboUser } from "../../../models/KoboUser";
-import { CustomIcon } from "../../../utils/CustomIcon";
+import { UseExecuter } from "../../utils/useExecuter";
+import { KoboUser } from "../../models/KoboUser";
+import { CustomIcon } from "../../utils/CustomIcon";
 import React from "react";
-export const organizationData: OrganizationData = new OrganizationData();
+import { dataController } from "../../controller/DataController";
+
 export function UserBody({ baseURL }: { baseURL: string }) {
   const { loading, executer, error } = UseExecuter();
-  const organizations: KoboUser[] = useBehaviorState(organizationData.users);
+  const organizations: KoboUser[] = useBehaviorState(dataController.users);
 
   useEffect(() => {
     executer(async () => {
-      await organizationData.load(baseURL);
+      await dataController.load(baseURL);
     });
   }, [baseURL]);
   return (

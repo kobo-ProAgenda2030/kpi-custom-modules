@@ -18,11 +18,11 @@ import {
 } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import { CheckBox, CheckBoxOutlineBlank } from "@material-ui/icons";
-import { UseExecuter } from "../../../utils/useExecuter";
-import { KoboUser, KoboUserOrganization } from "../../../models/KoboUser";
-import { UserRole } from "../../../models/UserRole";
-import { organizationData } from "./UserBody";
-import { useBehaviorState } from "../../../utils/useBehaviorState";
+import { UseExecuter } from "../../utils/useExecuter";
+import { KoboUser, KoboUserOrganization } from "../../models/KoboUser";
+import { UserRole } from "../../models/UserRole";
+import { useBehaviorState } from "../../utils/useBehaviorState";
+import { dataController } from "../../controller/DataController";
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -59,7 +59,7 @@ export function EditUserProfileDialog({
     KoboUserOrganization[]
   >(koboUser.organizations);
 
-  const userRoles: UserRole[] = useBehaviorState(organizationData.userRoles);
+  const userRoles: UserRole[] = useBehaviorState(dataController.userRoles);
 
   const { loading, executer, error } = UseExecuter();
   useEffect(() => {
@@ -110,14 +110,14 @@ export function EditUserProfileDialog({
               color="inherit"
               onClick={() => {
                 executer(async () => {
-                  await organizationData.server.updateKoboUser({
+                  await dataController.server.updateKoboUser({
                     id: koboUser.id,
                     roles: rolesSelected.map((value) => value.roleId),
                     organizations: organizationsSelected.map(
                       (value) => value.organizationId
                     ),
                   });
-                  await organizationData.loadKoboUsers();
+                  await dataController.loadKoboUsers();
                   onClose();
                 });
               }}

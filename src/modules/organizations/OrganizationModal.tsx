@@ -25,11 +25,11 @@ import {
   Delete,
   Edit,
 } from "@material-ui/icons";
-import { UseExecuter } from "../../../utils/useExecuter";
-import { useBehaviorState } from "../../../utils/useBehaviorState";
-import { organizationData } from "./OrganizationBody";
-import { KoboUser } from "../../../models/KoboUser";
-import { Organization } from "../../../models/Organization";
+import { UseExecuter } from "../../utils/useExecuter";
+import { useBehaviorState } from "../../utils/useBehaviorState";
+import { dataController } from "../../controller/DataController";
+import { KoboUser } from "../../models/KoboUser";
+import { Organization } from "../../models/Organization";
 import { ProfileModal } from "./Profile";
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -63,7 +63,7 @@ export function FullScreenDialog({
   const [organizationSelected, setProfileId] = useState<Organization | null>(
     null
   );
-  const koboUsers: KoboUser[] = useBehaviorState(organizationData.users);
+  const koboUsers: KoboUser[] = useBehaviorState(dataController.users);
   const [usersSelected, setUsersSelected] = React.useState<KoboUser[]>([]);
   const { loading, error, executer } = UseExecuter();
   const [name, setName] = useState("");
@@ -112,14 +112,21 @@ export function FullScreenDialog({
               onClick={() => {
                 if (organization !== null) {
                   executer(async () => {
-                    await organizationData.server.updateCreateOrganization({
+                    const members = usersSelected.map((user) => user.id);
+                    if (
+                      organization.members.indexOf(
+                        dataController.session.koboUserId
+                      ) >= 0
+                    )
+                      members.push(dataController.session.koboUserId);
+                    await dataController.server.updateCreateOrganization({
                       organizationId: organization.organizationId,
                       parentOrganizationId: organization.parentOrganizationId,
                       name: name,
                       color: color,
-                      members: usersSelected.map((user) => user.id),
+                      members: members,
                     });
-                    await organizationData.loadOrganizations();
+                    await dataController.loadOrganizations();
                     onClose();
                   });
                 }
@@ -197,6 +204,7 @@ export function FullScreenDialog({
               fullWidth
               value={usersSelected}
               onChange={(event: any, newValue: KoboUser[]) => {
+                console.log(newValue);
                 setUsersSelected(newValue);
               }}
               disableCloseOnSelect
@@ -242,10 +250,10 @@ export function FullScreenDialog({
                   if (organization !== null) {
                     executer(async () => {
                       if (organization.organizationId !== undefined)
-                        await organizationData.server.deleteOrganization(
+                        await dataController.server.deleteOrganization(
                           organization.organizationId
                         );
-                      await organizationData.loadOrganizations();
+                      await dataController.loadOrganizations();
                       onClose();
                     });
                   }
