@@ -16,3 +16,4 @@ export class CustomSession {
     return this.assets.indexOf(asset) >= 0;
   }
 }
+export const customSessionInstance = new CustomSession();
