@@ -5,7 +5,7 @@ export interface KoboUser {
   organizations: KoboUserOrganization[];
 }
 export interface KoboUserResource {
-  id: string;
+  koboUserId: string;
   assets: {
     name: string;
   }[];

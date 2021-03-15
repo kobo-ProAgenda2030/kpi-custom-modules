@@ -6,11 +6,26 @@ export class CustomSession {
   koboUserId = "";
   organizations: string[] = [];
   async load(server: Services): Promise<void> {
-    const koboUserResource: KoboUserResource = await server.getKoboUserResources();
-    this.assets = koboUserResource.assets.map((value) => value.name);
-    this.organizations = koboUserResource.organizations.map(
-      (value) => value.organizationId
-    );
+    const koboUserResource: KoboUserResource | null = await server
+      .getKoboUserResources()
+      .catch(() => {
+        fetch(
+          `${window.location.protocol}//${window.location.host}/api-auth/logout/`
+        ).then(() => {
+          if (localStorage.getItem("sessionToken") !== null) {
+            localStorage.removeItem("sessionToken");
+            window.location.href = `${window.location.protocol}//${window.location.host}`;
+          }
+        });
+        return null;
+      });
+    if (koboUserResource !== null) {
+      this.assets = koboUserResource.assets.map((value) => value.name);
+      this.organizations = koboUserResource.organizations.map(
+        (value) => value.organizationId
+      );
+      this.koboUserId = `${koboUserResource.koboUserId}`;
+    }
   }
   hasAccess(asset: string): boolean {
     return this.assets.indexOf(asset) >= 0;
