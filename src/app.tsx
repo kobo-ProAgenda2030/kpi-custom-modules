@@ -5,7 +5,7 @@ export function App() {
   return (
     <div style={{ display: "flex" }}>
       <div style={{ width: 300 }}></div>
-      <OrganizationBody baseURL={"http://localhost:63253"} />
+      <OrganizationBody baseURL={"http://192.168.100.3:63253"} />
     </div>
   );
 }

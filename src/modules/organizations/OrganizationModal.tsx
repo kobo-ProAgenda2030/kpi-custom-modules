@@ -83,6 +83,17 @@ export function FullScreenDialog({
     }
   }, [organization]);
   const newOrganization = organization.organizationId === undefined;
+  const canView = dataController.session.hasAccess(
+    "organizations_profile_view"
+  );
+  const canCrete =
+    dataController.session.hasAccess("organizations_profile_create") &&
+    organization.profileId === null;
+  const canUpdate =
+    dataController.session.hasAccess("organizations_profile_update") &&
+    organization.profileId !== null;
+
+  const canDoSomething = !newOrganization && canView && (canCrete || canUpdate);
   return (
     <div>
       <Dialog
@@ -138,7 +149,11 @@ export function FullScreenDialog({
         </AppBar>
         {loading && <LinearProgress style={{ width: "100%" }} />}
         <Grid container style={{ paddingTop: 20, paddingBottom: 10 }}>
-          <Grid item xs={newOrganization ? 12 : 8} style={gridStyle}>
+          <Grid
+            item
+            xs={newOrganization || !canDoSomething ? 12 : 8}
+            style={gridStyle}
+          >
             <TextField
               disabled={loading}
               fullWidth
@@ -150,7 +165,7 @@ export function FullScreenDialog({
               }}
             />
           </Grid>
-          {!newOrganization && (
+          {canDoSomething && (
             <Grid
               item
               xs={4}

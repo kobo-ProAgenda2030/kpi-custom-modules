@@ -129,19 +129,20 @@ const OrganizationView = ({
             >
               {organization.name}
             </Typography>
-
-            <CustomIcon
-              icon={<Add />}
-              onClick={() => {
-                setEditProfile({
-                  parentOrganizationId: organization.organizationId,
-                  name: "",
-                  color: "",
-                  organizations: [],
-                  members: [],
-                });
-              }}
-            />
+            {dataController.session.hasAccess("organizations_create") && (
+              <CustomIcon
+                icon={<Add />}
+                onClick={() => {
+                  setEditProfile({
+                    parentOrganizationId: organization.organizationId,
+                    name: "",
+                    color: "",
+                    organizations: [],
+                    members: [],
+                  });
+                }}
+              />
+            )}
             <div
               style={{
                 backgroundColor: "white",
@@ -151,20 +152,25 @@ const OrganizationView = ({
               }}
             ></div>
 
-            {existProfile && (
+            {existProfile &&
+              dataController.session.hasAccess(
+                "organizations_profile_view"
+              ) && (
+                <CustomIcon
+                  icon={<AccountBox />}
+                  onClick={() => {
+                    setProfileId(organization);
+                  }}
+                />
+              )}
+            {dataController.session.hasAccess("organizations_update") && (
               <CustomIcon
-                icon={<AccountBox />}
+                icon={<Edit />}
                 onClick={() => {
-                  setProfileId(organization);
+                  setEditProfile(organization);
                 }}
               />
             )}
-            <CustomIcon
-              icon={<Edit />}
-              onClick={() => {
-                setEditProfile(organization);
-              }}
-            />
           </div>
         </div>
       </div>

@@ -88,7 +88,14 @@ export function ProfileModal({
       });
     }
   }, [organization]);
-
+  const canCrete =
+    dataController.session.hasAccess("organizations_profile_create") &&
+    !existProfile;
+  const canUpdate =
+    dataController.session.hasAccess("organizations_profile_update") &&
+    existProfile;
+  const canDoSomething = canCrete || canUpdate;
+  const modalLoading = loading || !canDoSomething;
   return (
     <div>
       <Dialog
@@ -100,7 +107,7 @@ export function ProfileModal({
         <AppBar className={classes.appBar}>
           <Toolbar>
             <IconButton
-              disabled={loading}
+              disabled={modalLoading && canDoSomething}
               edge="start"
               color="inherit"
               onClick={onClose}
@@ -114,7 +121,7 @@ export function ProfileModal({
                 : `Editar Perfil de ${organization.name}`}
             </Typography>
             <Button
-              disabled={loading}
+              disabled={modalLoading}
               autoFocus
               color="inherit"
               onClick={() => {
@@ -147,7 +154,9 @@ export function ProfileModal({
               {!existProfile ? "Crear" : "Guardar"}
             </Button>
           </Toolbar>
-          {loading && <LinearProgress style={{ width: "100%" }} />}
+          {modalLoading && canDoSomething && (
+            <LinearProgress style={{ width: "100%" }} />
+          )}
         </AppBar>
         <Grid container style={{ paddingTop: 20, paddingBottom: 10 }}>
           <Grid item xs={12} style={{ ...gridStyle, color: "red" }}>
@@ -155,7 +164,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={12} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Formación de consitución"
               variant="outlined"
@@ -167,7 +176,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={12} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Dirección"
               variant="outlined"
@@ -179,7 +188,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={12} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Telefonos"
               variant="outlined"
@@ -191,7 +200,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={6} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Número de tecnicos y/o profesionales"
               variant="outlined"
@@ -204,7 +213,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={6} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Número total de empleados"
               variant="outlined"
@@ -217,7 +226,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={12} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Departamento"
               variant="outlined"
@@ -229,7 +238,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={12} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Provincia"
               variant="outlined"
@@ -241,7 +250,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={12} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Municipio"
               variant="outlined"
@@ -253,7 +262,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={4} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Numero total de conexiones de agua potable"
               variant="outlined"
@@ -266,7 +275,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={4} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Numero de conexiones con medidor"
               variant="outlined"
@@ -279,7 +288,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={4} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Numero de conexiones sin medidor"
               variant="outlined"
@@ -292,7 +301,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={4} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Numero de piletas publicas"
               variant="outlined"
@@ -305,7 +314,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={4} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Numero de letrinas"
               variant="outlined"
@@ -318,7 +327,7 @@ export function ProfileModal({
           </Grid>
           <Grid item xs={4} style={gridStyle}>
             <TextField
-              disabled={loading}
+              disabled={modalLoading}
               fullWidth
               label="Continuidad del servicio  hr/dia"
               variant="outlined"
