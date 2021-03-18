@@ -59,7 +59,19 @@ export function EditUserProfileDialog({
     KoboUserOrganization[]
   >(koboUser.organizations);
 
-  const userRoles: UserRole[] = useBehaviorState(dataController.userRoles);
+  const userRoles: UserRole[] = useBehaviorState(
+    dataController.userRoles
+  ).filter((value) => {
+    let response = false;
+    if (dataController.session.roles.indexOf("1") >= 0) response = true;
+    if (dataController.session.roles.indexOf("2") >= 0) {
+      if (value.roleId == "2" || value.roleId === "3") response = true;
+    }
+    if (dataController.session.roles.indexOf("4") >= 0) {
+      if (value.roleId == "4" || value.roleId === "5") response = true;
+    }
+    return response;
+  });
 
   const { loading, executer, error } = UseExecuter();
   useEffect(() => {
@@ -110,9 +122,18 @@ export function EditUserProfileDialog({
               color="inherit"
               onClick={() => {
                 executer(async () => {
+                  const rolesTemp = rolesSelected.map((value) => value.roleId);
+                  koboUser.roles.forEach((roleId) => {
+                    const roleIndex = userRoles.findIndex(
+                      (value) => value.roleId === roleId
+                    );
+                    if (roleIndex < 0) {
+                      rolesTemp.push(roleId);
+                    }
+                  });
                   await dataController.server.updateKoboUser({
                     id: koboUser.id,
-                    roles: rolesSelected.map((value) => value.roleId),
+                    roles: rolesTemp,
                     organizations: organizationsSelected.map(
                       (value) => value.organizationId
                     ),

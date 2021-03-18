@@ -92,21 +92,24 @@ const OrganizationView = ({
               {organization.username}
             </Typography>
 
-            <div
-              style={{
-                backgroundColor: "white",
-                width: 1,
-                height: 15,
-                marginTop: 15,
-              }}
-            ></div>
-
-            <CustomIcon
-              icon={<Edit />}
-              onClick={() => {
-                setEditProfile(organization);
-              }}
-            />
+            {dataController.session.hasAccess("users_update") && (
+              <>
+                <div
+                  style={{
+                    backgroundColor: "white",
+                    width: 1,
+                    height: 15,
+                    marginTop: 15,
+                  }}
+                ></div>
+                <CustomIcon
+                  icon={<Edit />}
+                  onClick={() => {
+                    setEditProfile(organization);
+                  }}
+                />
+              </>
+            )}
           </div>
         </div>
       </div>

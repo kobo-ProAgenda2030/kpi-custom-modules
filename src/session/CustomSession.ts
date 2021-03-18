@@ -3,6 +3,7 @@ import { Services } from "../service/services";
 
 export class CustomSession {
   assets: string[] = [];
+  roles: string[] = [];
   koboUserId = "";
   organizations: string[] = [];
   async load(server: Services): Promise<void> {
@@ -20,6 +21,7 @@ export class CustomSession {
         return null;
       });
     if (koboUserResource !== null) {
+      this.roles = koboUserResource.roles;
       this.assets = koboUserResource.assets.map((value) => value.name);
       this.organizations = koboUserResource.organizations.map(
         (value) => value.organizationId

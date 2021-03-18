@@ -6,6 +6,7 @@ export interface KoboUser {
 }
 export interface KoboUserResource {
   koboUserId: string;
+  roles: string[];
   assets: {
     name: string;
   }[];

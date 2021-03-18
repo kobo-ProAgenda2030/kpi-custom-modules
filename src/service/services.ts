@@ -11,7 +11,11 @@ export class Services {
   }
   //User management
   async getAllKoboUsers(): Promise<KoboUser[]> {
-    return this.serverConnection.get<KoboUser[]>("/KoboUser");
+    const response: KoboUser[] = await this.serverConnection.get<KoboUser[]>(
+      "/KoboUser"
+    );
+    response.sort((a, b) => a.username.localeCompare(b.username));
+    return response.filter((value) => value.id !== "-1");
   }
   async getKoboUserResources(): Promise<KoboUserResource> {
     return this.serverConnection.get<KoboUserResource>(
@@ -44,7 +48,11 @@ export class Services {
   }
   //role management
   async getAllRoles(): Promise<UserRole[]> {
-    return this.serverConnection.get<UserRole[]>("/Role/All");
+    const roles: UserRole[] = await this.serverConnection.get<UserRole[]>(
+      "/Role/All"
+    );
+    roles.sort((a, b) => a.name.localeCompare(b.name));
+    return roles;
   }
   //Profile management
   async getAllProfiles(): Promise<Profile[]> {
