@@ -94,6 +94,12 @@ export function FullScreenDialog({
     organization.profileId !== null;
 
   const canDoSomething = !newOrganization && canView && (canCrete || canUpdate);
+  const canViewUsers = dataController.session.hasAccess(
+    "organizations_users_view"
+  );
+  const canModifyUser =
+    dataController.session.hasAccess("organizations_users_add") ||
+    dataController.session.hasAccess("organizations_users_remove");
   return (
     <div>
       <Dialog
@@ -210,42 +216,44 @@ export function FullScreenDialog({
           <Grid item xs={12} style={gridStyle}>
             <Card style={{ height: 50, backgroundColor: color }} />
           </Grid>
-          <Grid item xs={12} style={gridStyle}>
-            <Autocomplete
-              disabled={loading}
-              multiple
-              id="checkboxes-tags-demo"
-              options={koboUsers}
-              fullWidth
-              value={usersSelected}
-              onChange={(event: any, newValue: KoboUser[]) => {
-                console.log(newValue);
-                setUsersSelected(newValue);
-              }}
-              disableCloseOnSelect
-              disableClearable
-              getOptionLabel={(option) => option.username}
-              renderOption={(option, { selected }) => (
-                <React.Fragment>
-                  <Checkbox
-                    icon={<CheckBoxOutlineBlank fontSize="small" />}
-                    checkedIcon={<CheckBox fontSize="small" />}
-                    style={{ marginRight: 8 }}
-                    checked={selected}
+          {canViewUsers && (
+            <Grid item xs={12} style={gridStyle}>
+              <Autocomplete
+                disabled={!canModifyUser || loading}
+                multiple
+                id="checkboxes-tags-demo"
+                options={koboUsers}
+                fullWidth
+                value={usersSelected}
+                onChange={(event: any, newValue: KoboUser[]) => {
+                  console.log(newValue);
+                  setUsersSelected(newValue);
+                }}
+                disableCloseOnSelect
+                disableClearable
+                getOptionLabel={(option) => option.username}
+                renderOption={(option, { selected }) => (
+                  <React.Fragment>
+                    <Checkbox
+                      icon={<CheckBoxOutlineBlank fontSize="small" />}
+                      checkedIcon={<CheckBox fontSize="small" />}
+                      style={{ marginRight: 8 }}
+                      checked={selected}
+                    />
+                    {option.username}
+                  </React.Fragment>
+                )}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    variant="outlined"
+                    label="Miembros"
+                    placeholder="Buscar usuarios"
                   />
-                  {option.username}
-                </React.Fragment>
-              )}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  variant="outlined"
-                  label="Miembros"
-                  placeholder="Buscar usuarios"
-                />
-              )}
-            />
-          </Grid>
+                )}
+              />
+            </Grid>
+          )}
           {organization.parentOrganizationId !== undefined && (
             <Grid
               item
