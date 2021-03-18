@@ -18,6 +18,7 @@ export interface Profile {
 
 export interface PostProfile {
   id?: string;
+  organizationId?: string;
   formation: string;
   address: string;
   phone: string;

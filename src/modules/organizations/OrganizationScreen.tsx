@@ -1,5 +1,5 @@
 import { LinearProgress, Typography } from "@material-ui/core";
-import { Add, Edit, KeyboardArrowUp } from "@material-ui/icons";
+import { AccountBox, Add, Edit, KeyboardArrowUp } from "@material-ui/icons";
 import React, { useEffect, useState } from "react";
 import { useBehaviorState } from "../../utils/useBehaviorState";
 import { KeyboardArrowDown } from "@material-ui/icons";
@@ -8,6 +8,7 @@ import { UseExecuter } from "../../utils/useExecuter";
 import { colorLum } from "../../utils/ColorLum";
 import { Organization } from "../../models/Organization";
 import { dataController } from "../../controller/DataController";
+import { ProfileModal } from "./Profile";
 
 export function OrganizationBody({ baseURL }: { baseURL: string }) {
   const { loading, executer, error } = UseExecuter();
@@ -54,6 +55,10 @@ const OrganizationView = ({
   const existOrganizations =
     organization.organizations && organization.organizations.length !== 0;
 
+  const [organizationSelected, setProfileId] = useState<Organization | null>(
+    null
+  );
+  const existProfile = organization.profileId !== null;
   return (
     <div
       style={{
@@ -146,6 +151,14 @@ const OrganizationView = ({
               }}
             ></div>
 
+            {existProfile && (
+              <CustomIcon
+                icon={<AccountBox />}
+                onClick={() => {
+                  setProfileId(organization);
+                }}
+              />
+            )}
             <CustomIcon
               icon={<Edit />}
               onClick={() => {
@@ -205,6 +218,14 @@ const OrganizationView = ({
           organization={editProfile}
           onClose={() => {
             setEditProfile(null);
+          }}
+        />
+      )}
+      {organizationSelected !== null && (
+        <ProfileModal
+          organization={organizationSelected}
+          onClose={() => {
+            setProfileId(null);
           }}
         />
       )}

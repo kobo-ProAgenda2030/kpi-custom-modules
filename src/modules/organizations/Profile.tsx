@@ -122,6 +122,7 @@ export function ProfileModal({
                   const response = await dataController.server.updateCreateProfile(
                     {
                       id: organization.profileId,
+                      organizationId: organization.organizationId,
                       formation: formation,
                       address: address,
                       phone: phone,
