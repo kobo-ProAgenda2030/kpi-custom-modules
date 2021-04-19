@@ -1,3 +1,4 @@
+import React from "react";
 import { ShinyMenu } from "./modules/shiny/ShinyMenu";
 import { ShinyMain } from "./modules/shiny/ShineMain";
 
