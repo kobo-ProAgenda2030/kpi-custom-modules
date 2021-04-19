@@ -27,6 +27,7 @@ export class CustomSession {
         (value) => value.type === "shiny"
       );
       this.assets = koboUserResource.assets.map((value) => value.name);
+      if (this.shinyAssets.length > 0) this.assets.push("shiny_dashboard");
       this.organizations = koboUserResource.organizations.map(
         (value) => value.organizationId
       );
