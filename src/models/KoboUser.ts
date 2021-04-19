@@ -9,6 +9,8 @@ export interface KoboUserResource {
   roles: string[];
   assets: {
     name: string;
+    path: string;
+    type: string;
   }[];
   organizations: KoboUserOrganization[];
 }
@@ -24,4 +26,9 @@ export interface KoboUserPost {
   id: string;
   roles: string[];
   organizations: string[];
+}
+export interface ShinyAssets {
+  name: string;
+  path: string;
+  type: string;
 }

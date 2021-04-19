@@ -1,11 +1,13 @@
-import React from "react";
-import { OrganizationBody } from "./modules/organizations/OrganizationScreen";
+import { ShinyMenu } from "./modules/shiny/ShinyMenu";
+import { ShinyMain } from "./modules/shiny/ShineMain";
 
 export function App() {
   return (
     <div style={{ display: "flex" }}>
-      <div style={{ width: 300 }}></div>
-      <OrganizationBody baseURL={"http://192.168.100.3:63253"} />
+      <div style={{ width: 300 }}>
+        <ShinyMenu baseURL={"http://192.168.100.3:63253"} />
+      </div>
+      <ShinyMain shinyDashboardUrl={"http://localhost:3838"} />
     </div>
   );
 }

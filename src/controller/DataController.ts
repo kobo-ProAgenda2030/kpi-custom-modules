@@ -1,5 +1,5 @@
 import { BehaviorSubject } from "rxjs";
-import { KoboUser } from "../models/KoboUser";
+import { KoboUser, ShinyAssets } from "../models/KoboUser";
 import { Organization } from "../models/Organization";
 import { UserRole } from "../models/UserRole";
 import { Services } from "../service/services";
@@ -7,6 +7,7 @@ import { CustomSession } from "../session/CustomSession";
 
 export class DataController {
   users = new BehaviorSubject<KoboUser[]>([]);
+  shinySelected = new BehaviorSubject<ShinyAssets | null>(null);
   userRoles = new BehaviorSubject<UserRole[]>([]);
   organizations = new BehaviorSubject<Organization[]>([]);
   server: Services = new Services();

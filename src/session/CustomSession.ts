@@ -1,9 +1,10 @@
-import { KoboUserResource } from "../models/KoboUser";
+import { KoboUserResource, ShinyAssets } from "../models/KoboUser";
 import { Services } from "../service/services";
 
 export class CustomSession {
   assets: string[] = [];
   roles: string[] = [];
+  shinyAssets: ShinyAssets[] = [];
   koboUserId = "";
   organizations: string[] = [];
   async load(server: Services): Promise<void> {
@@ -22,6 +23,9 @@ export class CustomSession {
       });
     if (koboUserResource !== null) {
       this.roles = koboUserResource.roles;
+      this.shinyAssets = koboUserResource.assets.filter(
+        (value) => value.type === "shiny"
+      );
       this.assets = koboUserResource.assets.map((value) => value.name);
       this.organizations = koboUserResource.organizations.map(
         (value) => value.organizationId
