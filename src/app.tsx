@@ -1,6 +1,6 @@
 import React from "react";
 import { ShinyMenu } from "./modules/shiny/ShinyMenu";
-import { ShinyMain } from "./modules/shiny/ShineMain";
+import { ShinyMain } from "./modules/shiny/ShinyMain";
 
 export function App() {
   return (
